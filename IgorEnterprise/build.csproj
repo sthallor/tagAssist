@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Deploy" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets"/>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
+  <PropertyGroup>
+    <Environment Condition=" '$(Environment)' == '' ">PROD</Environment>
+	<IntegrationName>IgorEnterprise</IntegrationName>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Environment)' == 'PROD' ">
+    <IntegrationServer>CAL0-VP-ACE01</IntegrationServer>
+    <AppRoot>\\$(IntegrationServer)\c$\Program Files\$(IntegrationName)</AppRoot>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Code Include="bin\Debug\*.*" />
+  </ItemGroup>
+  
+  <Target Name="Deploy">
+  	<Exec Command='sc \\cal0-vp-ace01 stop IgorEnterprise' ContinueOnError="WarnAndContinue"/>
+    <Sleep Milliseconds="30000" />
+    <Copy SourceFiles="@(Code)" DestinationFolder="$(AppRoot)"/>
+  	<Exec Command='sc \\cal0-vp-ace01 start IgorEnterprise'/>
+  </Target>
+</Project>
